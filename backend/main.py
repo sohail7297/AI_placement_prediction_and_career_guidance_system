@@ -4,7 +4,7 @@ import pandas as pd
 import joblib
 
 app = FastAPI(
-    title="AI Career Intelligence API"
+    title="AI Placement Prediction API"
 )
 
 model = joblib.load(
@@ -12,9 +12,9 @@ model = joblib.load(
 )
 
 @app.get("/")
-def home():
+def root():
     return {
-        "message": "AI Career Intelligence API Running"
+        "message": "AI Placement Prediction API Running"
     }
 
 @app.get("/health")
@@ -28,42 +28,41 @@ def predict(data: StudentData):
 
     input_df = pd.DataFrame([{
         "age": data.age,
-        "gender": data.gender,
         "cgpa": data.cgpa,
+        "backlogs": data.backlogs,
+        "attendance": data.attendance,
+        "tenth_percentage": data.tenth_percentage,
+        "twelfth_percentage": data.twelfth_percentage,
+
+        "branch": data.branch,
         "college_tier": data.college_tier,
-        "city_tier": data.city_tier,
 
         "python_skill": data.python_skill,
+        "c++_skill": data.cpp_skill,
         "java_skill": data.java_skill,
-        "c++_skill": data.__dict__["c++_skill"],
         "ml_skill": data.ml_skill,
         "web_dev_skill": data.web_dev_skill,
-
-        "internships": data.internships,
-        "projects": data.projects,
-        "certifications": data.certifications,
-        "github_projects": data.github_projects,
-        "hackathons": data.hackathons,
+        "communication_skill": data.communication_skill,
 
         "aptitude_score": data.aptitude_score,
         "logical_reasoning": data.logical_reasoning,
-        "communication_skill": data.communication_skill,
+
+        "internships": data.internships,
+        "projects": data.projects,
+        "github_projects": data.github_projects,
+        "hackathons": data.hackathons,
+        "certifications": data.certifications,
+
+        "coding_contest_rating": data.coding_contest_rating,
 
         "teamwork": data.teamwork,
         "leadership": data.leadership,
         "problem_solving": data.problem_solving,
         "time_management": data.time_management,
 
-        "backlogs": data.backlogs,
-        "attendance": data.attendance,
-
-        "tenth_percentage": data.tenth_percentage,
-        "twelfth_percentage": data.twelfth_percentage,
-
-        "family_income": data.family_income,
-        "coding_contest_rating": data.coding_contest_rating,
-
-        "branch": data.branch
+        "gender": data.gender,
+        "city_tier": data.city_tier,
+        "family_income": data.family_income
     }])
 
     prediction = model.predict(input_df)[0]
