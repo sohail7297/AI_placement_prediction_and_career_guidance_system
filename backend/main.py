@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from schemas import StudentData
 import pandas as pd
 import joblib
@@ -7,9 +8,18 @@ app = FastAPI(
     title="AI Placement Prediction API"
 )
 
-model = joblib.load(
-    "trained_models/placement_model.pkl"
+# Enable CORS for React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
+# Load trained model
+model = joblib.load("trained_models/placement_model.pkl")
+
 
 @app.get("/")
 def root():
@@ -17,11 +27,13 @@ def root():
         "message": "AI Placement Prediction API Running"
     }
 
+
 @app.get("/health")
 def health():
     return {
         "status": "healthy"
     }
+
 
 @app.post("/predict")
 def predict(data: StudentData):
@@ -66,13 +78,9 @@ def predict(data: StudentData):
     }])
 
     prediction = model.predict(input_df)[0]
-
     probability = model.predict_proba(input_df)[0][1]
 
     return {
-        "prediction":
-            "Placed" if prediction == 1 else "Not Placed",
-
-        "placement_probability":
-            round(float(probability * 100), 2)
+        "prediction": "Placed" if prediction == 1 else "Not Placed",
+        "placement_probability": round(float(probability * 100), 2)
     }
