@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import StudentData
+from services.gemini_service import generate_career_analysis
+import json
 import pandas as pd
 import joblib
 
@@ -80,7 +82,29 @@ def predict(data: StudentData):
     prediction = model.predict(input_df)[0]
     probability = model.predict_proba(input_df)[0][1]
 
+    student_profile = {
+        "cgpa": data.cgpa,
+        "branch": data.branch,
+        "python_skill": data.python_skill,
+        "cpp_skill": data.cpp_skill,
+        "java_skill": data.java_skill,
+        "ml_skill": data.ml_skill,
+        "web_dev_skill": data.web_dev_skill,
+        "communication_skill": data.communication_skill,
+        "internships": data.internships,
+        "projects": data.projects,
+        "hackathons": data.hackathons,
+        "certifications": data.certifications
+    }
+
+    ai_response = generate_career_analysis(
+        student_profile,
+        "Placed" if prediction == 1 else "Not Placed",
+        round(float(probability * 100), 2)
+    )
+
     return {
         "prediction": "Placed" if prediction == 1 else "Not Placed",
-        "placement_probability": round(float(probability * 100), 2)
+        "placement_probability": round(float(probability * 100), 2),
+        "ai_analysis": ai_response
     }
