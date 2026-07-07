@@ -99,7 +99,8 @@ function Predictor() {
       console.log("Payload:", payload);
 
       const response = await api.post("/predict", payload);
-
+      console.log("FULL RESPONSE");
+      console.log(response.data);
       setResult(response.data);
     } catch (error) {
       console.error(error);
@@ -336,47 +337,133 @@ function Predictor() {
         </div>
 
         {/* Result */}
-        {result && (
-          <div className="bg-slate-900 border border-green-500/30 rounded-2xl p-8 text-center">
-            <h2 className="text-3xl font-bold mb-6">
-              Prediction Result
-            </h2>
+        {/* Result */}
 
-            <div className="text-6xl font-bold text-green-400 mb-4">
-              {result.placement_probability}%
-            </div>
+        {result && (() => {
 
-            <div className="text-2xl font-semibold mb-6">
-              {result.prediction}
-            </div>
+          const ai = result.ai;
 
-            <div className="grid md:grid-cols-2 gap-6 text-left">
-              <div className="bg-black rounded-xl p-4">
-                <h3 className="text-purple-400 font-bold mb-3">
-                  Strengths
-                </h3>
+          return (
 
-                <ul className="space-y-2 text-gray-300">
-                  <li>✓ Technical Skills</li>
-                  <li>✓ Academic Performance</li>
-                  <li>✓ Project Experience</li>
-                </ul>
+            <div className="bg-slate-900 border border-purple-500/20 rounded-2xl p-8 mt-10">
+
+              <h2 className="text-4xl font-bold text-center mb-6">
+                Prediction Result
+              </h2>
+
+              <div className="text-center">
+
+                <h1 className="text-7xl font-bold text-green-400">
+                  {result.placement_probability}%
+                </h1>
+
+                <p className="text-3xl mt-4 font-semibold">
+                  {result.prediction}
+                </p>
+
               </div>
 
-              <div className="bg-black rounded-xl p-4">
-                <h3 className="text-purple-400 font-bold mb-3">
-                  Improvement Areas
-                </h3>
+              {ai && (
 
-                <ul className="space-y-2 text-gray-300">
-                  <li>⚡ Participate in Hackathons</li>
-                  <li>⚡ Build More Projects</li>
-                  <li>⚡ Improve Communication Skills</li>
-                </ul>
-              </div>
+                <div className="grid md:grid-cols-2 gap-6 mt-10">
+
+                  {/* Strengths */}
+
+                  <div className="bg-black rounded-xl p-6">
+
+                    <h3 className="text-purple-400 text-2xl font-bold mb-4">
+                      💪 Strengths
+                    </h3>
+
+                    <ul className="space-y-3">
+
+                      {ai.strengths?.map((item, index) => (
+
+                        <li key={index}>
+                          ✅ {item}
+                        </li>
+
+                      ))}
+
+                    </ul>
+
+                  </div>
+
+                  {/* Weaknesses */}
+
+                  <div className="bg-black rounded-xl p-6">
+
+                    <h3 className="text-red-400 text-2xl font-bold mb-4">
+                      ⚠ Weaknesses
+                    </h3>
+
+                    <ul className="space-y-3">
+
+                      {ai.weaknesses?.map((item, index) => (
+
+                        <li key={index}>
+                          • {item}
+                        </li>
+
+                      ))}
+
+                    </ul>
+
+                  </div>
+
+                  {/* Recommendations */}
+
+                  <div className="bg-black rounded-xl p-6">
+
+                    <h3 className="text-yellow-400 text-2xl font-bold mb-4">
+                      🚀 Recommendations
+                    </h3>
+
+                    <ul className="space-y-3">
+
+                      {ai.recommendations?.map((item, index) => (
+
+                        <li key={index}>
+                          ⭐ {item}
+                        </li>
+
+                      ))}
+
+                    </ul>
+
+                  </div>
+
+                  {/* Career Paths */}
+
+                  <div className="bg-black rounded-xl p-6">
+
+                    <h3 className="text-cyan-400 text-2xl font-bold mb-4">
+                      💼 Career Paths
+                    </h3>
+
+                    <ul className="space-y-3">
+
+                      {ai.career_paths?.map((item, index) => (
+
+                        <li key={index}>
+                          🎯 {item}
+                        </li>
+
+                      ))}
+
+                    </ul>
+
+                  </div>
+
+                </div>
+
+              )}
+
             </div>
-          </div>
-        )}
+
+          );
+
+        })()}
 
       </div>
     </div>
