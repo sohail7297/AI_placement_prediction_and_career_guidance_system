@@ -82,6 +82,9 @@ def predict(data: StudentData):
     prediction = model.predict(input_df)[0]
     probability = model.predict_proba(input_df)[0][1]
 
+    prediction_text = "Placed" if prediction == 1 else "Not Placed"
+    probability = round(float(probability * 100), 2)
+
     student_profile = {
         "cgpa": data.cgpa,
         "branch": data.branch,
@@ -97,14 +100,21 @@ def predict(data: StudentData):
         "certifications": data.certifications
     }
 
-    ai_response = generate_career_analysis(
-        student_profile,
-        "Placed" if prediction == 1 else "Not Placed",
-        round(float(probability * 100), 2)
-    )
+    try:
+        ai_response = generate_career_analysis(
+            student_profile,
+            prediction_text,
+            round(float(probability * 100), 2)
+        )
+        print("Gemini Response:")
+        print(ai_response)
+
+    except Exception as e:
+        print("GEMINI ERROR:", e)
+        ai_response = "AI analysis unavailable"
 
     return {
-        "prediction": "Placed" if prediction == 1 else "Not Placed",
-        "placement_probability": round(float(probability * 100), 2),
+        "prediction": prediction_text,
+        "placement_probability": probability,
         "ai_analysis": ai_response
     }

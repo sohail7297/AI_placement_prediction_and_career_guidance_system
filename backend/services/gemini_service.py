@@ -1,47 +1,69 @@
 import google.generativeai as genai
 import os
+import json
 from dotenv import load_dotenv
 
 load_dotenv()
-
-print("API KEY:", os.getenv("GEMINI_API_KEY"))
 
 genai.configure(
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
-model = genai.GenerativeModel("gemini-2.0-flash")
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 
 def generate_career_analysis(student_data, prediction, probability):
 
     prompt = f"""
-    You are an expert AI Career Coach.
+You are an expert AI Career Coach.
 
-    Student Data:
-    {student_data}
+Student Profile:
+{student_data}
 
-    Placement Prediction:
-    {prediction}
+Prediction:
+{prediction}
 
-    Placement Probability:
-    {probability}%
+Probability:
+{probability}%
 
-    Give response in JSON format:
+Return ONLY valid JSON.
 
-    {{
-      "strengths": [],
-      "weaknesses": [],
-      "recommendations": [],
-      "career_paths": []
-    }}
+{{
+  "strengths":[
+    "..."
+  ],
+  "weaknesses":[
+    "..."
+  ],
+  "recommendations":[
+    "..."
+  ],
+  "career_paths":[
+    "..."
+  ]
+}}
+"""
 
-    Keep points short and professional.
-    """
+    response = model.generate_content(prompt)
+
+    text = (
+        response.text
+        .replace("```json", "")
+        .replace("```", "")
+        .strip()
+    )
 
     try:
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        print("GEMINI ERROR:", str(e))
-        return f"Gemini Error: {str(e)}"
+        return json.loads(text)
+
+    except Exception:
+
+        print("Gemini Invalid JSON")
+        print(text)
+
+        return {
+            "strengths": [],
+            "weaknesses": [],
+            "recommendations": [],
+            "career_paths": []
+        }
